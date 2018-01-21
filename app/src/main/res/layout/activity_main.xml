@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/main_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.design.widget.TabLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/main_tabs"/>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        app:menu_fab_hide_animation="@anim/empty"
+        app:menu_fab_show_animation="@anim/empty"
+        app:menu_icon="@drawable/ic_menu">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_add_fx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="fab_click"
+            android:src="@drawable/fab_add"
+            app:fab_label="Yeni Ses Efekti"
+            app:fab_size="mini"/>
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_add_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="fab_click"
+            android:src="@drawable/ic_rate_review"
+            app:fab_label="Sayfa Ekle"
+            app:fab_size="mini"/>
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_edit_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="fab_click"
+            android:src="@drawable/ic_edit"
+            app:fab_label="Sayfayı Düzenle"
+            app:fab_size="mini"/>
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_remove_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="fab_click"
+            android:src="@drawable/ic_delete_forever"
+            app:fab_label="Sayfayı Kaldır"
+            app:fab_size="mini"/>
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+</RelativeLayout>

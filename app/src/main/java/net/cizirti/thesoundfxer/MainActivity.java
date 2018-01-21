@@ -26,6 +26,8 @@ import net.cizirti.thesoundfxer.database.SoundFXDBHelper;
 import java.io.File;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
+
 public class MainActivity extends AppCompatActivity {
 
     private int FILE_CODE = 0b100101;
@@ -60,18 +62,15 @@ public class MainActivity extends AppCompatActivity {
                         ).getId()
                 );
 
-                String msg = "";
-
                 switch (code) {
                     case 0:
-                        msg = "Yeni dosya başarıyla eklendi!";
+                        Toasty.success(this, "Ses efekti başarıyla eklendi.").show();
                         break;
                     case 1:
-                        msg = "HATA! Bu dosya zaten bu sayfada mevcuttur.";
+                        Toasty.error(this, "Ses efekti zaten bu sayfada mevcuttur.").show();
                         break;
                 }
 
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                 App.notifyDbChanges();
             }
         }
@@ -113,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        alertDialog.setNegativeButton("İPTAL ET", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton("İPTAL", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
@@ -135,13 +134,29 @@ public class MainActivity extends AppCompatActivity {
                     "Bu ilk sayfadır. Bu sayfayı silemezsiniz.",
                     Toast.LENGTH_SHORT).show();
         } else {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setTitle("Emin Misiniz?");
+            alertDialog.setMessage("Bu sayfayı silerseniz eğer tüm içeriği sonsuza dek silinecektir.");
+            alertDialog.setPositiveButton("ONAYLA", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    (new SoundFXDBHelper(MainActivity.this)).removePage(
+                            pagesAdapter.getPages().get(vp_main.getCurrentItem()).getId()
+                    );
 
-            (new SoundFXDBHelper(this)).removePage(
-                    pagesAdapter.getPages().get(vp_main.getCurrentItem()).getId()
-            );
+                    vp_main.setCurrentItem(0);
+                    App.notifyDbChanges();
 
-            vp_main.setCurrentItem(0);
-            App.notifyDbChanges();
+                    Toasty.success(MainActivity.this, "Sayfa başarıyla silindi.").show();
+                }
+            });
+            alertDialog.setNegativeButton("İPTAL", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            alertDialog.show();
         }
     }
 

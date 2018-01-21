@@ -29,5 +29,6 @@ dependencies {
     compile 'com.nononsenseapps:filepicker:4.1.0'
     implementation 'com.android.support:design:26.1.0'
     compile project(":fam")
+	compile 'com.github.GrenderG:Toasty:1.2.8'
 
 }

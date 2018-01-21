@@ -1,11 +1,14 @@
 package net.cizirti.thesoundfxer;
 
 import android.app.Application;
+import android.support.annotation.ColorInt;
 
 import net.cizirti.thesoundfxer.listener.DatabaseUpdatedListener;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+
+import es.dmoral.toasty.Toasty;
 
 /**
  * Created by cezvedici on 21.01.2018.
@@ -22,6 +25,7 @@ public class App extends Application {
 
         // TODO: check files that no longer exists in database
         databaseUpdatedListeners = new ArrayList<>();
+        Toasty.Config.getInstance().apply();
     }
 
     public static ArrayList<DatabaseUpdatedListener> GetDBUpdateListeners() {

@@ -1,6 +1,8 @@
 package net.cizirti.thesoundfxer.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +15,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import net.cizirti.thesoundfxer.App;
+import net.cizirti.thesoundfxer.MainActivity;
 import net.cizirti.thesoundfxer.R;
 import net.cizirti.thesoundfxer.database.SoundFXDBHelper;
 import net.cizirti.thesoundfxer.listener.DatabaseUpdatedListener;
@@ -24,6 +27,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import es.dmoral.toasty.Toasty;
 
 /**
  * Created by cezvedici on 16.01.2018.
@@ -140,11 +145,27 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
         holder.tv_remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                (new SoundFXDBHelper(context)).removeSoundFX(
-                        fx.getId()
-                );
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                alertDialog.setTitle("Emin Misiniz?");
+                alertDialog.setMessage("Bu ses efektini silerseniz tekrar geri getiremeyeceksiniz. Bu ses efektini silmek gerçek dosyayı etkilemez.");
+                alertDialog.setPositiveButton("ONAYLA", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        (new SoundFXDBHelper(context)).removeSoundFX(
+                                fx.getId()
+                        );
 
-                App.notifyDbChanges();
+                        App.notifyDbChanges();
+                        Toasty.success(context, "Ses efekti başarıyla silindi.").show();
+                    }
+                });
+                alertDialog.setNegativeButton("İPTAL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                alertDialog.show();
             }
         });
 

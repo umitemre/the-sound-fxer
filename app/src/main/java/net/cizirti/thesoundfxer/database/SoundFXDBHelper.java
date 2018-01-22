@@ -75,8 +75,6 @@ public class SoundFXDBHelper extends SQLiteOpenHelper {
         db.insert("sound_fx", null, values);
         db.close();
 
-        Log.i(TAG, String.format("A new soundFX has added to page %d", page));
-
         return 0;
     }
 
@@ -101,8 +99,6 @@ public class SoundFXDBHelper extends SQLiteOpenHelper {
 
                 fxes.add(fx);
 
-                Log.i(TAG, fx.toString());
-
             } while (c.moveToNext());
         }
 
@@ -122,8 +118,6 @@ public class SoundFXDBHelper extends SQLiteOpenHelper {
             do {
                 Page page = new Page(c.getInt(0), c.getString(1));
                 pages.add(page);
-
-                Log.i(TAG, page.toString());
 
             } while (c.moveToNext());
         }
@@ -178,12 +172,10 @@ public class SoundFXDBHelper extends SQLiteOpenHelper {
     public void removePage(int pageId) {
         getWritableDatabase().execSQL("DELETE FROM `sound_fx` WHERE `page` = " + pageId);
         getWritableDatabase().execSQL("DELETE FROM `pages` WHERE `id` = " + pageId);
-
-        Log.i(TAG, String.format("removePage is called for pageId: %d", pageId));
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("INSERT INTO `pages` (`page_name`) VALUES ('SoundFX');");
+
     }
 }

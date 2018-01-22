@@ -1,4 +1,4 @@
-package net.cizirti.thesoundfxer;
+package net.cizirti.thesoundfxer.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,6 +20,8 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 import com.nononsenseapps.filepicker.Utils;
 
+import net.cizirti.thesoundfxer.App;
+import net.cizirti.thesoundfxer.R;
 import net.cizirti.thesoundfxer.adapter.PagesAdapter;
 import net.cizirti.thesoundfxer.database.SoundFXDBHelper;
 import net.cizirti.thesoundfxer.model.Page;
@@ -34,15 +36,18 @@ public class MainActivity extends AppCompatActivity {
     private int FILE_CODE = 0b100101;
     private ViewPager vp_main;
     private PagesAdapter pagesAdapter;
-    private TabLayout main_tabs;
+    private SoundFXDBHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        TabLayout main_tabs = findViewById(R.id.main_tabs);
+
+        db = new SoundFXDBHelper(MainActivity.this);
+
         vp_main = findViewById(R.id.vp_main);
-        main_tabs = findViewById(R.id.main_tabs);
         pagesAdapter = new PagesAdapter(getSupportFragmentManager(), this);
 
         vp_main.setAdapter(pagesAdapter);
@@ -105,10 +110,7 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.setPositiveButton("OLUŞTUR", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                (new SoundFXDBHelper(MainActivity.this)).addPage(
-                        editText.getText().toString()
-                );
-
+                db.addPage(editText.getText().toString());
                 App.notifyDbChanges();
             }
         });
@@ -143,11 +145,7 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.setPositiveButton("DEĞİŞTİR", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                (new SoundFXDBHelper(MainActivity.this)).editPage(
-                        editText.getText().toString(), page.getId()
-
-                );
-
+                db.editPage(editText.getText().toString(), page.getId());
                 App.notifyDbChanges();
             }
         });
@@ -175,9 +173,7 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.setPositiveButton("ONAYLA", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    (new SoundFXDBHelper(MainActivity.this)).removePage(
-                            pagesAdapter.getPages().get(vp_main.getCurrentItem()).getId()
-                    );
+                    db.removePage(pagesAdapter.getPages().get(vp_main.getCurrentItem()).getId());
 
                     vp_main.setCurrentItem(0);
                     App.notifyDbChanges();

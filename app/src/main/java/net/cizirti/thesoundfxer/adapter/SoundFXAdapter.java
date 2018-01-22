@@ -15,8 +15,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import net.cizirti.thesoundfxer.App;
-import net.cizirti.thesoundfxer.MainActivity;
 import net.cizirti.thesoundfxer.R;
+import net.cizirti.thesoundfxer.utils.Utility;
 import net.cizirti.thesoundfxer.database.SoundFXDBHelper;
 import net.cizirti.thesoundfxer.listener.DatabaseUpdatedListener;
 import net.cizirti.thesoundfxer.listener.OnSoundFXClickListener;
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import es.dmoral.toasty.Toasty;
 
@@ -86,6 +85,7 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
             public void onClick(View v) {
                 if (getMediaPlayer().isPlaying()) {
                     getMediaPlayer().pause();
+
                     holder.ib_play.setImageDrawable(
                             context.getResources().getDrawable(
                                     R.drawable.ic_play_arrow
@@ -113,31 +113,12 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
 
         holder.pb_played.setMax(playerMap.get(fx.getId()).getDuration());
 
-        // init timer
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    if (playerMap.get(fx.getId()).isPlaying()) {
-                        holder.pb_played.setProgress(playerMap.get(fx.getId()).getCurrentPosition());
+        // updates current playing position of the sound fx
+        Thread thread = new Thread(
+                new SFXProgressBarUpdater(context, playerMap.get(fx.getId()), holder)
+        );
 
-                        ((MainActivity) context).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                holder.tv_currentTime.setText(
-                                        convertMsToReadableTime(
-                                                playerMap.get(fx.getId()).getCurrentPosition()
-                                        )
-                                );
-                            }
-                        });
-                    }
-                } catch (NullPointerException e) {
-                    cancel();
-                }
-            }
-        }, 0, 250);
+        thread.start();
 
         // adjustable sound volume
         holder.sb_volume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -180,10 +161,9 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
 
         holder.tv_soundname.setTag(fx);
 
-        holder.tv_duration.setText(convertMsToReadableTime(
+        holder.tv_duration.setText(Utility.convertMsToReadableTime(
                 playerMap.get(fx.getId()).getDuration()
         ));
-
     }
 
     private void onSoundFXButtonClick(final View v, final SoundFX fx) {
@@ -216,32 +196,18 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
             case R.id.ib_replay:
                 MediaPlayer mp = playerMap.get(fx.getId());
 
-                // go back
                 mp.seekTo(0);
-                // play
-                mp.start();
+
+                if (mp.isPlaying()) {
+                    // play
+                    mp.start();
+                }
+
                 break;
             default:
                 // do nothing.
                 break;
         }
-    }
-
-    private String convertMsToReadableTime(int duration) {
-        int d = 0, s = 0;
-
-        while (duration > 1000) {
-            s += 1;
-
-            if (s > 60) {
-                d += 1;
-                s = 0;
-            }
-
-            duration -= 1000;
-        }
-
-        return String.format(Locale.CANADA, "%02d:%02d", d, s);
     }
 
     @Override

@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.stream.DoubleStream;
 
+import javax.security.auth.login.LoginException;
+
 /**
  * Created by cezvedici on 16.01.2018.
  */
@@ -78,28 +80,6 @@ public class SoundFXDBHelper extends SQLiteOpenHelper {
         return 0;
     }
 
-    public int addPage(String pageName) {
-        if (getReadableDatabase().rawQuery(
-                String.format(
-                        "SELECT `id` FROM `pages` WHERE `page_name` = %s",
-                        DatabaseUtils.sqlEscapeString(pageName)
-                ),
-                null
-        ).getCount() > 0) {
-            return 1;
-        }
-
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-
-        values.put("page_name", pageName);
-
-        db.insert("pages", null, values);
-        db.close();
-
-        return 0;
-    }
-
     public ArrayList<SoundFX> getSoundFXes(int pageId) {
         ArrayList<SoundFX> fxes = new ArrayList<>();
         Cursor c = getReadableDatabase().rawQuery(
@@ -153,13 +133,46 @@ public class SoundFXDBHelper extends SQLiteOpenHelper {
         return pages;
     }
 
+    public void removeSoundFX(int fxId) {
+        getWritableDatabase().execSQL("DELETE FROM `sound_fx` WHERE `id` = " + fxId + ";");
+    }
+
     public void checkFiles() {
 
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("INSERT INTO `pages` (`page_name`) VALUES ('SoundFX');");
+    public int addPage(String pageName) {
+        if (getReadableDatabase().rawQuery(
+                String.format(
+                        "SELECT `id` FROM `pages` WHERE `page_name` = %s",
+                        DatabaseUtils.sqlEscapeString(pageName)
+                ),
+                null
+        ).getCount() > 0) {
+            return 1;
+        }
+
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("page_name", pageName);
+
+        db.insert("pages", null, values);
+        db.close();
+
+        return 0;
+    }
+
+    public void editPage(String s, int pageId) {
+        ContentValues values = new ContentValues();
+        values.put("page_name", s);
+
+        getWritableDatabase().update(
+                "pages",
+                values,
+                "id = " + pageId,
+                null
+        );
     }
 
     public void removePage(int pageId) {
@@ -169,7 +182,8 @@ public class SoundFXDBHelper extends SQLiteOpenHelper {
         Log.i(TAG, String.format("removePage is called for pageId: %d", pageId));
     }
 
-    public void removeSoundFX(int fxId) {
-        getWritableDatabase().execSQL("DELETE FROM `sound_fx` WHERE `id` = " + fxId + ";");
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("INSERT INTO `pages` (`page_name`) VALUES ('SoundFX');");
     }
 }

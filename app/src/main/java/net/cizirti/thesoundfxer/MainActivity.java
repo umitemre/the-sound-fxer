@@ -22,6 +22,7 @@ import com.nononsenseapps.filepicker.Utils;
 
 import net.cizirti.thesoundfxer.adapter.PagesAdapter;
 import net.cizirti.thesoundfxer.database.SoundFXDBHelper;
+import net.cizirti.thesoundfxer.model.Page;
 
 import java.io.File;
 import java.util.List;
@@ -123,8 +124,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void editPage() {
-        App.setEditMode(!App.isEditMode());
-        App.notifyDbChanges();
+        // changes page name
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Sayfa Adını Değiştir");
+        alertDialog.setMessage("Sayfa adını değiştirmek için yeni sayfa adını girin.");
+
+        final EditText editText = new EditText(this);
+        editText.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        ));
+
+        final Page page = pagesAdapter.getPages().get(vp_main.getCurrentItem());
+
+        editText.setText(page.getPageName());
+        alertDialog.setView(editText);
+
+        alertDialog.setPositiveButton("DEĞİŞTİR", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                (new SoundFXDBHelper(MainActivity.this)).editPage(
+                        editText.getText().toString(), page.getId()
+
+                );
+
+                App.notifyDbChanges();
+            }
+        });
+
+        alertDialog.setNegativeButton("İPTAL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        alertDialog.show();
     }
 
     public void removePage() {

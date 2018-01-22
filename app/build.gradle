@@ -30,5 +30,5 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
     compile project(":fam")
 	compile 'com.github.GrenderG:Toasty:1.2.8'
-
+    compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.7.2'
 }

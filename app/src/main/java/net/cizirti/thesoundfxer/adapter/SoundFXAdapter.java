@@ -6,10 +6,10 @@ import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -74,7 +74,7 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
         final SoundFX fx = soundFXES.get(position);
         final Timer timer;
 
-        holder.tv_remove.setVisibility(App.isEditMode() ? View.VISIBLE : View.INVISIBLE);
+        // holder.tv_remove.setVisibility(App.isEditMode() ? View.VISIBLE : View.INVISIBLE);
 
         // parse path
         String[] paths = fx.getPath().split("/");
@@ -110,6 +110,17 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
                 try {
                     if (playerMap.get(fx.getId()).isPlaying()) {
                         holder.pb_played.setProgress(playerMap.get(fx.getId()).getCurrentPosition());
+
+                        ((MainActivity) context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                holder.tv_currentTime.setText(
+                                        convertMsToReadableTime(
+                                                playerMap.get(fx.getId()).getCurrentPosition()
+                                        )
+                                );
+                            }
+                        });
                     }
                 } catch (NullPointerException e) {
                     cancel();
@@ -142,7 +153,7 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        holder.tv_remove.setOnClickListener(new View.OnClickListener() {
+        holder.ib_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
@@ -171,6 +182,27 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
 
         holder.tv_soundname.setTag(fx);
 
+        holder.tv_duration.setText(convertMsToReadableTime(
+                playerMap.get(fx.getId()).getDuration()
+        ));
+
+    }
+
+    private String convertMsToReadableTime(int duration) {
+        int d = 0, s = 0;
+
+        while (duration > 1000) {
+            s += 1;
+
+            if (s > 60) {
+                d += 1;
+                s = 0;
+            }
+
+            duration -= 1000;
+        }
+
+        return String.format(Locale.CANADA, "%02d:%02d", d, s);
     }
 
     @Override
@@ -191,18 +223,22 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tv_soundname, tv_remove;
+        TextView tv_soundname, tv_duration, tv_currentTime;
 
         ProgressBar pb_played;
         SeekBar sb_volume;
+
+        ImageButton ib_delete;
 
         ViewHolder(View itemView) {
             super(itemView);
 
             tv_soundname = itemView.findViewById(R.id.tv_soundname);
-            tv_remove = itemView.findViewById(R.id.tv_remove);
             pb_played = itemView.findViewById(R.id.pb_played);
             sb_volume = itemView.findViewById(R.id.sb_volume);
+            tv_duration = itemView.findViewById(R.id.tv_duration);
+            tv_currentTime = itemView.findViewById(R.id.tv_currentTime);
+            ib_delete = itemView.findViewById(R.id.ib_delete);
         }
     }
 }

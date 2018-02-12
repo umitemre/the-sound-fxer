@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import net.cizirti.thesoundfxer.App;
 import net.cizirti.thesoundfxer.R;
+import net.cizirti.thesoundfxer.listener.SFXProgressBarUpdater;
+import net.cizirti.thesoundfxer.listener.SFXVolumeChangeListener;
 import net.cizirti.thesoundfxer.utils.Utility;
 import net.cizirti.thesoundfxer.database.SoundFXDBHelper;
 import net.cizirti.thesoundfxer.listener.DatabaseUpdatedListener;
@@ -24,7 +26,6 @@ import net.cizirti.thesoundfxer.model.SoundFX;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Timer;
 
 import es.dmoral.toasty.Toasty;
@@ -71,7 +72,6 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final SoundFX fx = soundFXES.get(position);
-        final Timer timer;
 
         // parse path
         String[] paths = fx.getPath().split("/");
@@ -114,36 +114,15 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
         holder.pb_played.setMax(playerMap.get(fx.getId()).getDuration());
 
         // updates current playing position of the sound fx
-        Thread thread = new Thread(
-                new SFXProgressBarUpdater(context, playerMap.get(fx.getId()), holder)
-        );
-
-        thread.start();
+        new Timer().schedule(
+                new SFXProgressBarUpdater(context, playerMap.get(fx.getId()), holder),
+                0,
+                10);
 
         // adjustable sound volume
-        holder.sb_volume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                float p = (float) progress / 100;
-
-                fx.setVolume(p);
-                playerMap.get(fx.getId()).setVolume(p, p);
-
-                (new SoundFXDBHelper(context)).getWritableDatabase().execSQL(
-                        String.format(
-                                Locale.CANADA,
-                                "UPDATE `sound_fx` SET `volume` = %f WHERE `id` = %d",
-                                fx.getVolume(),
-                                fx.getId())
-                );
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
+        holder.sb_volume.setOnSeekBarChangeListener(new SFXVolumeChangeListener(
+                fx, context, playerMap.get(fx.getId())
+        ));
 
         holder.ib_replay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,12 +207,15 @@ public class SoundFXAdapter extends RecyclerView.Adapter<SoundFXAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tv_soundname, tv_duration, tv_currentTime;
+        TextView tv_soundname;
+        TextView tv_duration;
+        public TextView tv_currentTime;
 
-        ProgressBar pb_played;
+        public ProgressBar pb_played;
         SeekBar sb_volume;
 
         ImageButton ib_delete, ib_replay, ib_play;
+
 
         ViewHolder(View itemView) {
             super(itemView);

@@ -1,5 +1,7 @@
 package net.cizirti.thesoundfxer.model;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
 /**
@@ -31,6 +33,7 @@ public class Page {
         this.pageName = pageName;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return String.format(Locale.getDefault(), "id: %d, name: %s", getId(), getPageName());

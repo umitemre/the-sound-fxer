@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/TheSoundFXer.iml" filepath="$PROJECT_DIR$/TheSoundFXer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/fam/fam.iml" filepath="$PROJECT_DIR$/fam/fam.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/the-sound-fxer.iml" filepath="$PROJECT_DIR$/.idea/modules/the-sound-fxer.iml" group="the-sound-fxer" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/the-sound-fxer-app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/the-sound-fxer-app.iml" group="the-sound-fxer/app" />
     </modules>
   </component>
 </project>

@@ -1,7 +1,7 @@
 package net.cizirti.thesoundfxer;
 
 import android.app.Application;
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 
 import net.cizirti.thesoundfxer.listener.DatabaseUpdatedListener;
 

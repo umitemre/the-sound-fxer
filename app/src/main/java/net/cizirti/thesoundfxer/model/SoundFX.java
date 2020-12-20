@@ -1,5 +1,7 @@
 package net.cizirti.thesoundfxer.model;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
 public class SoundFX {
@@ -40,6 +42,7 @@ public class SoundFX {
         return page;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return String.format(

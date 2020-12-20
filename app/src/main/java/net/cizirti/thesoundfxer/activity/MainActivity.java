@@ -6,9 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.tabs.TabLayout;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,10 +70,10 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (code) {
                     case 0:
-                        Toasty.success(this, "Ses efekti başarıyla eklendi.").show();
+                        Toasty.success(this, "Sound FX succesfully added!").show();
                         break;
                     case 1:
-                        Toasty.error(this, "Ses efekti zaten bu sayfada mevcuttur.").show();
+                        Toasty.error(this, "This sound FX already exists in this page!").show();
                         break;
                 }
 
@@ -96,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void addNewPage() {
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("Yeni Sayfa Oluştur");
-        alertDialog.setMessage("Yeni sayfa oluşturmak için yeni sayfa adını girin. Bu otomatik olarak yeni bir sekme oluşturacaktır.");
+        alertDialog.setTitle("Create a new page");
+        alertDialog.setMessage("Please enter title of the new page. This operation will automatically add a new tab.");
 
         final EditText editText = new EditText(this);
         editText.setLayoutParams(new LinearLayout.LayoutParams(
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         alertDialog.setView(editText);
 
-        alertDialog.setPositiveButton("OLUŞTUR", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton("CREATE", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 db.addPage(editText.getText().toString());
@@ -115,12 +115,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        alertDialog.setNegativeButton("İPTAL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
+        alertDialog.setNegativeButton("CANCEL", null);
 
         alertDialog.show();
     }
@@ -128,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
     public void editPage() {
         // changes page name
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("Sayfa Adını Değiştir");
-        alertDialog.setMessage("Sayfa adını değiştirmek için yeni sayfa adını girin.");
+        alertDialog.setTitle("Change Title");
+        alertDialog.setMessage("To change title of the page, please enter a new title.");
 
         final EditText editText = new EditText(this);
         editText.setLayoutParams(new LinearLayout.LayoutParams(
@@ -142,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         editText.setText(page.getPageName());
         alertDialog.setView(editText);
 
-        alertDialog.setPositiveButton("DEĞİŞTİR", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton("CHANGE", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 db.editPage(editText.getText().toString(), page.getId());
@@ -150,45 +145,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        alertDialog.setNegativeButton("İPTAL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
+        alertDialog.setNegativeButton("CANCEL", null);
 
         alertDialog.show();
     }
 
     public void removePage() {
         if (vp_main.getCurrentItem() == 0) {
-            Toast.makeText(
-                    this,
-                    "Bu ilk sayfadır. Bu sayfayı silemezsiniz.",
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-            alertDialog.setTitle("Emin Misiniz?");
-            alertDialog.setMessage("Bu sayfayı silerseniz eğer tüm içeriği sonsuza dek silinecektir.");
-            alertDialog.setPositiveButton("ONAYLA", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    db.removePage(pagesAdapter.getPages().get(vp_main.getCurrentItem()).getId());
-
-                    vp_main.setCurrentItem(0);
-                    App.notifyDbChanges();
-
-                    Toasty.success(MainActivity.this, "Sayfa başarıyla silindi.").show();
-                }
-            });
-            alertDialog.setNegativeButton("İPTAL", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                }
-            });
-            alertDialog.show();
+            Toast.makeText(this, "You can't delete the single page.", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Are you suge?");
+        alertDialog.setMessage("Deleting this page will also delete its contents but not the actual files.");
+
+        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                db.removePage(pagesAdapter.getPages().get(vp_main.getCurrentItem()).getId());
+
+                vp_main.setCurrentItem(0);
+                App.notifyDbChanges();
+
+                Toasty.success(MainActivity.this, "Page is successfully deleted.").show();
+            }
+        });
+        alertDialog.setNegativeButton("CANCEL", null);
+        alertDialog.show();
     }
 
     public void fab_click(View view) {
